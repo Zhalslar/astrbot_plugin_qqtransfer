@@ -1,0 +1,56 @@
+{
+    "trans_group": {
+        "description": "中转群",
+        "type": "string",
+        "hint": "填中转群群号，作为服务端和客户端的通信群（仅支持QQ群）",
+        "default": ""
+    },
+    "enable_server": {
+        "description": "是否启用服务端",
+        "type": "bool",
+        "hint": "作为服务端，即接收命令，处理请求，发送文件",
+        "default": false
+    },
+    "server_client_white_list": {
+        "description": "服务端白名单",
+        "type": "list",
+        "hint": "服务端只响应白名单中的客户端，不填则不限制",
+        "default": []
+    },
+    "enable_client": {
+        "description": "是否启用客户端",
+        "type": "bool",
+        "hint": "作为客户端，即发送指令，接收文件",
+        "default": false
+    },
+    "client_server_white_list": {
+        "description": "客户端白名单",
+        "type": "list",
+        "hint": "服务端只响应白名单中的客户端，不填则不限制",
+        "default": []
+    },
+    "enable_delete": {
+        "description": "是否启用文件撤回",
+        "type": "bool",
+        "hint": "发送文件一段时间后，是否撤回文件（建议启用，否则群文件会多到爆炸）",
+        "default": true
+    },
+    "delete_time": {
+        "description": "文件撤回时间",
+        "type": "int",
+        "hint": "发送文件后，等待多少秒后撤回文件",
+        "default": 16
+    },
+    "send_record_probability": {
+        "description": "发送语音概率",
+        "type": "float",
+        "hint": "生成语音的概率",
+        "default": 0.15
+    },
+    "max_resp_text_len": {
+        "description": "最大文本长度",
+        "type": "int",
+        "hint": "最大文本长度",
+        "default": 50
+    }
+}

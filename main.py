@@ -92,10 +92,9 @@ class QQTransferPlugin(Star):
         # 仅允许只含有单条文本的消息链通过
         if not (len(chain) == 1 and isinstance(seg, Plain)):
             return
-        # bot将要发送的的文本
-        resp_text = seg.text
-        # 仅允许一定长度以下的文本通过
-        if len(resp_text) > self.max_resp_text_len:
+        # 仅允许一定长度范围的文本通过
+        verify_text = re.sub(r"[^a-zA-Z0-9\u4e00-\u9fff]", "", seg.text)
+        if not verify_text or len(verify_text) > self.max_resp_text_len:
             return
 
         server_id = self.client_server_white_list[0]
@@ -103,7 +102,9 @@ class QQTransferPlugin(Star):
         group_id = event.get_group_id() or "0"
         user_id = event.get_sender_id()
         media_type = "mp3"
-        command = f"{server_id}_{client_id}_{group_id}_{user_id}_{resp_text}_{media_type}"
+        command = (
+            f"{server_id}_{client_id}_{group_id}_{user_id}_{seg.text}_{media_type}"
+        )
 
         # 向中转群发送请求
         client = event.bot

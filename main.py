@@ -1,13 +1,14 @@
 import asyncio
-from datetime import datetime
 import random
 import re
-from astrbot.api.event import filter
+from datetime import datetime
+
 from astrbot import logger
-from astrbot.api.star import Context, Star, register
+from astrbot.api.event import filter
+from astrbot.api.star import Context, Star
 from astrbot.core import AstrBotConfig
-from astrbot.core.message.message_event_result import MessageChain
 from astrbot.core.message.components import Plain, Record
+from astrbot.core.message.message_event_result import MessageChain
 from astrbot.core.platform.sources.aiocqhttp.aiocqhttp_message_event import (
     AiocqhttpMessageEvent,
 )
@@ -19,13 +20,6 @@ server_pattern = r"(?P<server_id>\d+)_(?P<client_id>\d+)_+(?P<group_id>\d+)_+(?P
 file_name_pattern = r"^(\w+)_([\w-]+)_([\w-]+)_([\w-]+)_([\w-]+)_([\w-]+\.[\w-]+)$"
 
 
-@register(
-    "astrbot_plugin_qqtransfer",
-    "Zhalslar",
-    "基于QQ的文件传输插件",
-    "1.0.0",
-    "https://github.com/Zhalslar/astrbot_plugin_qqtransfer",
-)
 class QQTransferPlugin(Star):
     def __init__(self, context: Context, config: AstrBotConfig):
         super().__init__(context)
@@ -64,6 +58,9 @@ class QQTransferPlugin(Star):
         gpt_sovits_plugin = self.context.get_registered_star(
             "astrbot_plugin_GPT_SoVITS"
         )
+        if gpt_sovits_plugin is None:
+            logger.warning("未找到GPT-SoVITS插件，TTS服务不启动")
+            return None
         if gpt_sovits_plugin.activated:
             gpt_sovits_plugin_cls = gpt_sovits_plugin.star_cls
             save_path: str | None = await gpt_sovits_plugin_cls.tts_sever( # type: ignore
@@ -87,7 +84,10 @@ class QQTransferPlugin(Star):
         # 概率控制
         if random.random() > self.send_record_probability:
             return
-        chain = event.get_result().chain
+        result = event.get_result()
+        if not result:
+            return
+        chain = result.chain
         seg = chain[0]
         # 仅允许只含有单条文本的消息链通过
         if not (len(chain) == 1 and isinstance(seg, Plain)):
